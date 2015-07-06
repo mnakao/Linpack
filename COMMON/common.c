@@ -31,7 +31,7 @@ void set_params(int argc, char *argv[], int *n, int *nb, int *ld)
 // ||Ax-b||_oo/(eps*(||A||_oo*||x||_oo+||b||_oo)*N) < 16.0 ?
 void verification(int n, int ld, double A[n+1][ld], double *b)
 {
-  double x[n], tmp, norma, normb, normx;
+  double x[n], norma, normb, normx;
 
   memcpy(x, b, sizeof(double)*n);  // copy b to x
   normx = calc_norm_1(n, x);       // ||x||_oo
