@@ -1,9 +1,15 @@
+ifeq ($(arch),K)
+CC=fccpx
+CFLAGS=-Kfast,openmp -SSL2BLAMP -I./COMMON/
+CLINK=~/archives/CBLAS/lib/cblas_LINUX.a
+else
 CC=gcc
 CFLAGS=-O2 -std=c99 -I./COMMON/
 CLINK=/usr/lib/libcblas.dylib
+endif
 
 simple: simple.o common.o main.o hpl_timer.o
-	$(CC) $(CFLAGS) $(CLINK) $^ -o $@
+	$(CC) $(CFLAGS) $^ $(CLINK) -o $@
 
 blocking: blocking.o common.o main.o hpl_timer.o
 	$(CC) $(CFLAGS) $(CLINK) $^ -o $@
