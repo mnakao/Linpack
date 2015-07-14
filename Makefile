@@ -8,10 +8,11 @@ CFLAGS=-O2 -std=c99 -I./COMMON/
 CLINK=/usr/lib/libcblas.dylib
 endif
 
+all: blocking
 simple: simple.o common.o main.o hpl_timer.o
 	$(CC) $(CFLAGS) $^ $(CLINK) -o $@
 
-blocking: blocking.o common.o main.o hpl_timer.o
+blocking: blocking.o common.o main.o hpl_timer_blocking.o
 	$(CC) $(CFLAGS) $(CLINK) $^ -o $@
 
 simple.o: SERIAL/simple.c COMMON/common.h
@@ -28,6 +29,9 @@ main.o: SERIAL/main.c COMMON/common.h
 
 hpl_timer.o: COMMON/hpl_timer.c COMMON/hpl_timer.h
 	$(CC) $(CFLAGS) $< -c
+
+hpl_timer_blocking.o: COMMON/hpl_timer.c COMMON/hpl_timer.h
+	$(CC) $(CFLAGS) $< -c -D_BLOCKING -o hpl_timer_blocking.o
 
 clean:
 	rm -f *.o
