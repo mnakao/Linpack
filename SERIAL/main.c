@@ -16,14 +16,14 @@ int main(int argc, char *argv[])
 
   timer_clear();
   timer_start(TOTAL);
-  //  lu_decomp(n, nb, nbmin, ld, A, b);
+  lu_decomp(n, nb, nbmin, ld, A, b);
   lu_solve(n, nb, ld, A, b);
   timer_stop(TOTAL);
 
   timer_print();
   print_performance(n);
 
-  //  verification(seed, n, ld, A, b);
+  verification(seed, n, ld, A, b);
 
   free(A);
   return 0;

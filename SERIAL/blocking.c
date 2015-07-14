@@ -98,8 +98,8 @@ void lu_decomp(const int N, const int NB, const int NBMIN, const int LD, double 
 
 #define _OUTER_PRODUCT
 //#define _OUTER__PRODUCT_BLOCKING
-//#define _INNER_PRODUCT_BLOCKING
 //#define _INNER_PRODUCT
+//#define _INNER_PRODUCT_BLOCKING
 void lu_solve(const int N, const int NB, const int LD, double (*A)[LD], double *b)
 {
   timer_start(DSOLVE);
@@ -119,18 +119,6 @@ void lu_solve(const int N, const int NB, const int LD, double (*A)[LD], double *
 	b[k] -= tmp * A[j][k];
     }
   }
-#elif defined _INNER_PRODUCT_BLOCKING
-  b[N-1] /= A[N-1][N-1];
-  for(int k=N-2;k>=0;k-=NB){
-    int end = Mmax(k-NB+1, 0);
-    for(int i=k;i>=end;i--){
-      double tmp = b[i];
-      for(int j=i+1;j<N;j++){
-	tmp -= A[j][i] * b[j];
-      }
-      b[i] = tmp/A[i][i];
-    }
-  }
 #elif defined _INNER_PRODUCT
   b[N-1] /= A[N-1][N-1];
   for(int k=N-2;k>=0;k--){
@@ -139,6 +127,18 @@ void lu_solve(const int N, const int NB, const int LD, double (*A)[LD], double *
       tmp -= A[j][k] * b[j];
     }
     b[k] = tmp/A[k][k];
+  }
+#elif defined _INNER_PRODUCT_BLOCKING
+  b[N-1] /= A[N-1][N-1];
+  for(int k=N-2;k>=0;k-=NB){
+    int end = Mmax(k-NB+1, 0);
+    for(int i=k;i>=end;i--){
+      double tmp = b[i];
+      for(int j=i+1;j<N;j++){
+        tmp -= A[j][i] * b[j];
+      }
+      b[i] = tmp/A[i][i];
+    }
   }
 #endif
 
