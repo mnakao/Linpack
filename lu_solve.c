@@ -1,5 +1,6 @@
 #include "common.h"
 
+#define _BLAS
 //#define _OUTER_PRODUCT
 //#define _OUTER__PRODUCT_BLOCKING
 //#define _INNER_PRODUCT
@@ -8,14 +9,15 @@ void lu_solve(const int N, const int NB, const int LD, double (*A)[LD], double *
 {
   timer_start(DSOLVE);
 
+#if defined _BLAS
   cblas_dtrsv(CblasColMajor, CblasUpper, CblasNoTrans, CblasNonUnit,
 	      N, &A[0][0], LD, b, 1);
-
-#if defined _OUTER_PRODUCT
+#elif defined _OUTER_PRODUCT
   for(int i=N-1;i>=0;i--){
     double tmp = b[i] /= A[i][i];
     for(int k=0;k<i;k++)
       b[k] -= tmp * A[i][k];
+
   }
 #elif defined _OUTER__PRODUCT_BLOCKING
   for(int i=N-1;i>=0;i-=NB){
@@ -30,9 +32,9 @@ void lu_solve(const int N, const int NB, const int LD, double (*A)[LD], double *
   b[N-1] /= A[N-1][N-1];
   for(int k=N-2;k>=0;k--){
     double tmp = b[k];
-    for(int j=k+1;j<N;j++){
+    for(int j=k+1;j<N;j++)
       tmp -= A[j][k] * b[j];
-    }
+
     b[k] = tmp/A[k][k];
   }
 #elif defined _INNER_PRODUCT_BLOCKING
@@ -41,9 +43,9 @@ void lu_solve(const int N, const int NB, const int LD, double (*A)[LD], double *
     int end = Mmax(k-NB+1, 0);
     for(int i=k;i>=end;i--){
       double tmp = b[i];
-      for(int j=i+1;j<N;j++){
+      for(int j=i+1;j<N;j++)
         tmp -= A[j][i] * b[j];
-      }
+
       b[i] = tmp/A[i][i];
     }
   }

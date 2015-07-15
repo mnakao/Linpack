@@ -15,19 +15,19 @@ simple: lu_decomp_simple.o common.o main.o hpl_timer.o lu_solve.o
 block: lu_decomp_block.o common.o main.o hpl_timer_blocking.o lu_solve.o
 	$(CC) $(CFLAGS) $(CLINK) $^ -o $@
 
-lu_solve.o: SERIAL/lu_solve.c COMMON/common.h
+lu_solve.o: lu_solve.c COMMON/common.h
 	$(CC) $(CFLAGS) $< -c
 
-lu_decomp_simple.o: SERIAL/lu_decomp_simple.c COMMON/common.h
+lu_decomp_simple.o: lu_decomp_simple.c COMMON/common.h
 	$(CC) $(CFLAGS) $< -c
 
-lu_decomp_block.o: SERIAL/lu_decomp_block.c COMMON/common.h
+lu_decomp_block.o: lu_decomp_block.c COMMON/common.h
 	$(CC) $(CFLAGS) $< -c
 
 common.o: COMMON/common.c COMMON/common.h
 	$(CC) $(CFLAGS) $< -c
 
-main.o: SERIAL/main.c COMMON/common.h
+main.o: main.c COMMON/common.h
 	$(CC) $(CFLAGS) $< -c
 
 hpl_timer.o: COMMON/hpl_timer.c COMMON/hpl_timer.h
