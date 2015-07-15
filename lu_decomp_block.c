@@ -34,7 +34,6 @@ static int offset = 0;
 static void pdfact(const int j, const int width, const int N, const int NB, const int NBMIN,
 		   const int block_width, const int LD, double (*A)[LD], double *b, int *ip)
 {
-  timer_start(PANEL);
   if(width <= NBMIN){
     pfact_inner(j, width, N, NB, NBMIN, block_width, LD, A, b, ip);
     offset += width;
@@ -59,8 +58,6 @@ static void pdfact(const int j, const int width, const int N, const int NB, cons
   timer_stop(PANEL_DGEMM);
 
   pdfact(offset, rest, N, NB, NBMIN, block_width, LD, A, b, ip);
-
-  timer_stop(PANEL);
 }
 
 void lu_decomp(const int N, const int NB, const int NBMIN, const int LD, double (*A)[LD], double *b)
@@ -70,14 +67,17 @@ void lu_decomp(const int N, const int NB, const int NBMIN, const int LD, double 
   
   for(int j=0;j<N;j+=NB){
     int width = Mmin(j+NB, N) - j;
+
+    timer_start(PANEL);
     pdfact(j, width, N, NB, NBMIN, width, LD, A, b, ip);
+    timer_stop(PANEL);
 
     timer_start(SWAP);
     // SWAP
     for(int k=0;k<width;k++)
       if(j+k != ip[k])
 	cblas_dswap(N-j-width+1, &A[j+width][j+k], LD, &A[j+width][ip[k]], LD);
-    timer_start(SWAP);
+    timer_stop(SWAP);
 
     // PANEL UPDATE
     //    printf("DTRSM2: y = %2d - %2d  x = %2d - %2d\n", j, j+width, j+width, N+1);
