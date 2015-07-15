@@ -8,17 +8,20 @@ CFLAGS=-O2 -std=c99 -I./COMMON/
 CLINK=/usr/lib/libcblas.dylib
 endif
 
-all: blocking
-simple: simple.o common.o main.o hpl_timer.o
+all: block
+simple: lu_decomp_simple.o common.o main.o hpl_timer.o lu_solve.o
 	$(CC) $(CFLAGS) $^ $(CLINK) -o $@
 
-blocking: blocking.o common.o main.o hpl_timer_blocking.o
+block: lu_decomp_block.o common.o main.o hpl_timer_blocking.o lu_solve.o
 	$(CC) $(CFLAGS) $(CLINK) $^ -o $@
 
-simple.o: SERIAL/simple.c COMMON/common.h
+lu_solve.o: SERIAL/lu_solve.c COMMON/common.h
 	$(CC) $(CFLAGS) $< -c
 
-blocking.o: SERIAL/blocking.c COMMON/common.h
+lu_decomp_simple.o: SERIAL/lu_decomp_simple.c COMMON/common.h
+	$(CC) $(CFLAGS) $< -c
+
+lu_decomp_block.o: SERIAL/lu_decomp_block.c COMMON/common.h
 	$(CC) $(CFLAGS) $< -c
 
 common.o: COMMON/common.c COMMON/common.h

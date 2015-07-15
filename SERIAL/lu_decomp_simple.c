@@ -27,20 +27,3 @@ void lu_decomp(const int N, const int NB, const int NBMIN, const int LD, double 
   }
   timer_stop(LU);
 }
-
-void lu_solve(const int N, const int NB, const int LD, double (*A)[LD], double *b)  /* NB is not used. */
-{
-  timer_start(DSOLVE);
-
-  b[N-1] /= A[N-1][N-1];
-  for(int k=N-2;k>=0;k--){
-    double tmp = b[k];
-    for(int j=k+1;j<N;j++){
-      tmp -= A[j][k] * b[j];
-    }
-
-    b[k] = tmp/A[k][k];
-  }
-
-  timer_stop(DSOLVE);
-}
