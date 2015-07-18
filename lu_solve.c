@@ -23,11 +23,11 @@ void lu_solve(const int N, const int NB, const int LD, double (*A)[LD], double *
   cblas_dcopy(rest, &b[k], 1, x, 1);
 
   cblas_dgemv(CblasColMajor, CblasNoTrans, NB, rest, -1.0,
-	      &A[k][k-NB], LD, x, 1, 1.0, &b[k-NB], 1);
+    	      &A[k][k-NB], LD, x, 1, 1.0, &b[k-NB], 1);
   cblas_dtrsv(CblasColMajor, CblasUpper, CblasNoTrans, CblasNonUnit,
 	      NB, &A[k-NB][k-NB], LD, &b[k-NB], 1);
   cblas_dcopy(NB, &b[k-NB], 1, x, 1);
-
+  
   cblas_dgemv(CblasColMajor, CblasNoTrans, k-NB, rest, -1.0,
 	      &A[k][0], LD, &b[k], 1, 1.0, &b[0], 1);
 

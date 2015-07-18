@@ -13,7 +13,7 @@ simple: lu_decomp_simple.o common.o main.o hpl_timer.o lu_solve.o
 	$(CC) $(CFLAGS) $^ $(CLINK) -o $@
 
 block: lu_decomp_block.o common.o main.o hpl_timer_blocking.o lu_solve.o
-	$(CC) $(CFLAGS) $(CLINK) $^ -o $@
+	$(CC) $(CFLAGS) $^ $(CLINK) -o $@
 
 lu_solve.o: lu_solve.c COMMON/common.h
 	$(CC) $(CFLAGS) $< -c

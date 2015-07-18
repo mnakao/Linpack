@@ -4,7 +4,6 @@ static void pfact_inner(int j, const int width, const int N, const int NB, const
 			const int block_width, const int LD, double (*A)[LD], double *b, int *ip)
 {
   int local_j  = j % NB;
-  //  printf("PANEL : y = %2d - %2d  x = %2d - %2d\n", j, N, j, j + width);
 
   for(int k=0;k<width;k++,j++,local_j++){
     /* Search pivot * */
@@ -46,13 +45,11 @@ static void pdfact(const int j, const int width, const int N, const int NB, cons
   pdfact(j, new_width, N, NB, NBMIN, block_width, LD, A, b, ip);
 
   timer_start(PANEL_DTRSM);
-  //  printf("DTRSM : y = %2d - %2d  x = %2d - %2d\n", j, offset, offset, offset+rest);
   cblas_dtrsm(CblasColMajor, CblasLeft, CblasLower, CblasNoTrans,
 	      CblasUnit, new_width, rest, 1.0, &A[j][j], LD, &A[offset][j], LD);
   timer_stop(PANEL_DTRSM);
 
   timer_start(PANEL_DGEMM);
-  //  printf("DGEMM : y = %2d - %2d  x = %2d - %2d\n\n", offset, N, offset, offset+rest);
   cblas_dgemm(CblasColMajor, CblasNoTrans, CblasNoTrans, N-offset, rest, new_width,
   	      -1.0, &A[j][offset], LD, &A[offset][j], LD, 1.0, &A[offset][offset], LD);
   timer_stop(PANEL_DGEMM);
