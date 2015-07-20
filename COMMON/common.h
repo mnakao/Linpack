@@ -24,3 +24,5 @@ extern void set_params(int, char**, int*, int*, int*, int*);
 extern void lu_decomp(const int n, const int nb, const int nbmin, const int ld, double A[n+1][ld], double *b);
 extern void lu_solve(const int n, const int nb, const int ld, double A[n+1][ld], double *b);
 extern void print_performance(int n);
+
+extern void HPL_dlaswp00N(const int M, const int N, double *A, const int LDA, const int *IPIV);

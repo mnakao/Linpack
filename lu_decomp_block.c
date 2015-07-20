@@ -1,20 +1,20 @@
 #include "common.h"
 
 static void pfact_inner(int j, const int width, const int N, const int NB, const int NBMIN,
-			const int block_width, const int LD, double (*A)[LD], double *b, int *ip)
+			const int block_width, const int LD, double (*A)[LD], double *b, int *ipiv)
 {
   int local_j  = j % NB;
 
   for(int k=0;k<width;k++,j++,local_j++){
     /* Search pivot * */
     timer_start(PANEL_PIVOT);
-    ip[local_j] = (int)cblas_idamax(N-j, &A[j][j], 1) + j;
+    ipiv[local_j] = (int)cblas_idamax(N-j, &A[j][j], 1) + local_j;
     timer_stop(PANEL_PIVOT);
 
     /* SWAP in only Block */
     timer_start(PANEL_SWAP);
-    if(ip[local_j] != j)
-      cblas_dswap(block_width, &A[j-local_j][j], LD, &A[j-local_j][ip[local_j]], LD);
+    if(ipiv[local_j] != local_j)
+      cblas_dswap(block_width, &A[j-local_j][j], LD, &A[j-local_j][ipiv[local_j]+j-local_j], LD);
     timer_stop(PANEL_SWAP);
 
     /* PANEL Factorization */
@@ -31,10 +31,10 @@ static void pfact_inner(int j, const int width, const int N, const int NB, const
 
 static int offset = 0;
 static void pdfact(const int j, const int width, const int N, const int NB, const int NBMIN,
-		   const int block_width, const int LD, double (*A)[LD], double *b, int *ip)
+		   const int block_width, const int LD, double (*A)[LD], double *b, int *ipiv)
 {
   if(width <= NBMIN){
-    pfact_inner(j, width, N, NB, NBMIN, block_width, LD, A, b, ip);
+    pfact_inner(j, width, N, NB, NBMIN, block_width, LD, A, b, ipiv);
     offset += width;
     return;
   }
@@ -42,7 +42,7 @@ static void pdfact(const int j, const int width, const int N, const int NB, cons
   int new_width = width/2;
   int rest      = width - new_width;
 
-  pdfact(j, new_width, N, NB, NBMIN, block_width, LD, A, b, ip);
+  pdfact(j, new_width, N, NB, NBMIN, block_width, LD, A, b, ipiv);
 
   timer_start(PANEL_DTRSM);
   cblas_dtrsm(CblasColMajor, CblasLeft, CblasLower, CblasNoTrans,
@@ -54,26 +54,28 @@ static void pdfact(const int j, const int width, const int N, const int NB, cons
   	      -1.0, &A[j][offset], LD, &A[offset][j], LD, 1.0, &A[offset][offset], LD);
   timer_stop(PANEL_DGEMM);
 
-  pdfact(offset, rest, N, NB, NBMIN, block_width, LD, A, b, ip);
+  pdfact(offset, rest, N, NB, NBMIN, block_width, LD, A, b, ipiv);
 }
 
 void lu_decomp(const int N, const int NB, const int NBMIN, const int LD, double (*A)[LD], double *b)
 {
   timer_start(LU);
-  int ip[NB];
+  int ipiv[NB];
   
   for(int j=0;j<N;j+=NB){
     int width = Mmin(j+NB, N) - j;
 
     timer_start(PANEL);
-    pdfact(j, width, N, NB, NBMIN, width, LD, A, b, ip);
+    pdfact(j, width, N, NB, NBMIN, width, LD, A, b, ipiv);
     timer_stop(PANEL);
 
     timer_start(SWAP);
     // SWAP
-    for(int k=0;k<width;k++)
-      if(j+k != ip[k])
-	cblas_dswap(N-j-width+1, &A[j+width][j+k], LD, &A[j+width][ip[k]], LD);
+    //    for(int k=0;k<width;k++)
+    //      if(k != ipiv[k])
+    //	cblas_dswap(N-j-width+1, &A[j+width][j+k], LD, &A[j+width][ipiv[k]+j], LD);
+    HPL_dlaswp00N(width, N-j-width+1, &A[j+width][j], LD, ipiv);
+
     timer_stop(SWAP);
 
     // PANEL UPDATE
