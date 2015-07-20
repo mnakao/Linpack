@@ -9,6 +9,7 @@
 
 #define ALIGN 8
 
+#define HPL_PTR( ptr_, al_ ) ( ( ( (size_t)(ptr_)+(al_)-1 ) / (al_) ) * (al_) )
 #define Mmax(a_,b_) (((a_)>(b_))?(a_):(b_))
 #define Mmin(a_,b_) (((a_)<(b_))?(a_):(b_))
 #define VERIFY(d_)  (16.0 > d_) ? "PASS"  : "ERROR"

@@ -2,12 +2,14 @@
 
 int main(int argc, char *argv[])
 {
+  double *vptr = NULL;
   int n, ld, nb, nbmin, seed = 1;
 
   set_params(argc, argv, &n, &nb, &nbmin, &ld);
 
   /* malloc A[n+1][ld] */
-  double (*A)[ld] = malloc(sizeof(double) * (n+1) * ld);
+  vptr = (double *)malloc(sizeof(double) * ((n+1) * ld + ALIGN));
+  double (*A)[ld] = (double (*)[ld])HPL_PTR( vptr, ((size_t)(8) * sizeof(double) ) );
 
   /* A[n][0..n-1] is x[0..n-1] */
   double *b = &A[n][0];
