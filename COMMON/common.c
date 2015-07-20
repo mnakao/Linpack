@@ -76,6 +76,8 @@ void verification(const int seed, const int N, const int LD, double (*A)[LD], do
   double v = resid/(DBL_EPSILON*(norma * normx + normb)*N);
 
   printf("||Ax-b||_oo/(eps*(||A||_oo*||x||_oo+||b||_oo)*N) = %.3f (%s)\n", v, VERIFY(v));
+  printf("---\n");
+  fflush(stdout);
 }
 
 // Initialize A[][] & b[]
@@ -115,6 +117,8 @@ void print_performance(const int N)
     ( (2.0/3.0) * (double)(N) + (3.0/2.0) );
 
   printf("%.2f GFlops\n", Gflops);
+  printf("---\n");
+  fflush(stdout);
 }
 
 

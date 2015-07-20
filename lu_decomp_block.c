@@ -24,7 +24,7 @@ static void pfact_inner(int j, const int width, const int N, const int NB, const
 
     timer_start(PANEL_DGER);
     cblas_dger(CblasColMajor, N-1-j, width-1-k, -1.0, &A[j][j+1], 1,
-	       &A[j+1][j], LD, &A[j+1][j+1], LD);
+    	       &A[j+1][j], LD, &A[j+1][j+1], LD);
     timer_stop(PANEL_DGER);
   }
 }
