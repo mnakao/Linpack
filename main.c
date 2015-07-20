@@ -27,6 +27,6 @@ int main(int argc, char *argv[])
 
   verification(seed, n, ld, A, b);
 
-  free(A);
+  free(vptr);
   return 0;
 }
